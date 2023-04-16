@@ -1,2 +1,3 @@
 # KognitosTest
-Repository created for Kognitos test assignment
+To Test endpoint :
+
