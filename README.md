@@ -6,16 +6,21 @@ How to use: Replace the word with any other word in the above URL
 ?word=<>
  
 Approach:
-Traverse the string and store the all char in lowercase to a Dictionary/MAP
-Used Amazon EFS to persist across different lambda invocation
+Traverse the string/word and store all distinct chars in lowercase to a Dictionary/MAP
+I have ysed Amazon EFS to persist data across parallel lambda invocation
 
-At the Lambda initialization, we read the cache and update the cache in the mounted EFS path
+At the Lambda initialization, we read the cache from mounted EFS path and update the cache after every word processed. 
 
 EFS endpoint:
 https://ap-southeast-2.console.aws.amazon.com/efs/home?region=ap-southeast-2#/file-systems/fs-021623a0ef1a094e3
 
 Problem in the existing code:
-Somehow it is not working after lambda timeout. It means it is working with multiple parallel execution nut stops working after Lmabda instance timeout. 
+Somehow it is not working after lambda timeout. It means it is working with multiple parallel execution but stops working after Lambda instance got timed out. 
 We need to use a persistent db to solve this.
-I am sorry I didnt get time to debug the EFS for duarabilty issue: 
-I may use Amazon Dynamo DB for persisting cache if time persists.
+I am sorry I didn't get time to debug the EFS duarabilty issue: 
+I may go for Amazon Dynamo DB for persisting cache.
+
+Other optimizations:
+If the string is too large, we can do the parallel processing in multiple threads.
+May go for fork & join pool. 
+
