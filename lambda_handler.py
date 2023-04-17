@@ -1,30 +1,34 @@
 import json
 import os
 import fcntl
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 CACHE_FILE = '/mnt/cache/histogram.json'
 cache=dict()
 try:
     with open(CACHE_FILE, 'r') as cacheFile:
         fcntl.flock(cacheFile, fcntl.LOCK_SH)
-        cache = json.loads(cacheFile)
+        json_object = json.load(cacheFile)
+        print(json_object)
         fcntl.flock(cacheFile, fcntl.LOCK_UN)
 except:
-    print("no cache file present")
+    logger.info('no cache file present')
 
 
 def updateCache(cache):
     with open(CACHE_FILE, 'w') as cacheFile:
         fcntl.flock(cacheFile, fcntl.LOCK_EX)
-        json.dump(cache,cacheFile)
+        logger.info('Updating cache')
+        json_object = json.dumps(cache)
+        cacheFile.write(json_object)
         fcntl.flock(cacheFile, fcntl.LOCK_UN)
+
 
 def lambda_handler(event, context):
     #word = event["word"]
     word = event["queryStringParameters"]["word"]
-    #print(event)
-    #word = "abcd"
-    print(cache)
     output = cache
     for i, v in enumerate(word.lower()):
         output[v] = output.get(v, 0) + 1
